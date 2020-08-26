@@ -19,24 +19,30 @@ class YoutubeDownloader(tk.Frame):
         #https://www.youtube.com/watch?v=cH4E_t3m3xM
         int_row = int_column = int_count = 0
         for stream in context.streams.all():
+
             if hasattr(stream, 'resolution') and stream.resolution is not None:
                 text = str(stream.mime_type) + ' ' + str(stream.resolution)
-                int_column = int_count % 3
-                if int_count % 3 == 0:
-                    int_row += 1
+            elif hasattr(stream, 'abr') and stream.abr is not None:
+                text = str(stream.mime_type) + ' ' + str(stream.abr)
+            else:
+                continue
 
-                int_count += 1
-                self.media_type.set(str(stream.itag))
-                print(self.media_type)
-                tk.Radiobutton(
-                    text=text,
-                    variable=self.media_type,
-                    value=stream.itag
-                ).grid(row=int_row, column=int_column)
+            int_column = int_count % 3
+            if int_count % 3 == 0:
+                int_row += 1
+
+            int_count += 1
+            self.media_type.set(str(stream.itag))
+            #print(self.media_type)
+            tk.Radiobutton(
+                text=text,
+                variable=self.media_type,
+                value=stream.itag
+            ).grid(row=int_row, column=int_column)
 
     def download_media(self, yt):
         stream = yt.streams.get_by_itag(self.media_type.get())
-        print(stream)
+        #print(stream)
         stream.download()
 
     def add_download_button(self, yt):
